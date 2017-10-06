@@ -124,7 +124,6 @@ int file_center(struct user *user)
 {
     int y = 0;
     int n = 0;
-    printf("欢迎进入媒体播放中心\n");
     while(y == 0)
     {
         menu();
