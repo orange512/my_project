@@ -55,8 +55,10 @@ int main(int argc,char *argv[])
     fd_sock = connect_server("127.0.0.1");
     Get_Filename();
     if((fd_file = open(myfile,O_RDONLY)) < 0)
-        ERR_EXIT("open");
-
+    {
+        printf("找不到你上传的文件，请重新上传\n");
+        return -1;
+    }
     write(fd_sock,Filename,strlen(Filename));
     close(fd_sock);
     total = lseek(fd_file,0,SEEK_END);//获取文件大小
@@ -66,7 +68,7 @@ int main(int argc,char *argv[])
         block[i].offset = i * count_per;
         block[i].size = count_per;
         if(i == 3)
-            block[i].size = count_per+1;
+            block[i].size = total - i * count_per;
     }
     //创建子线程
     for(int i = 0 ; i < 4 ;i++)

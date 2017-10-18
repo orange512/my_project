@@ -17,7 +17,10 @@ void *thread_recv_data(void *arg)//线程接受传输分块文件
     sprintf(file,"part%d",temp);
     int fd_file = open(file,O_WRONLY|O_CREAT,0766);//创建分块文件
     if(fd_file < 0)
-        ERR_EXIT("thread open\n");
+    {
+        printf("创建分块文件%d失败\n",index);
+        return NULL;
+    }
     while(1)
     {
         int count = read(fd_data[index],buf,sizeof(buf));
@@ -45,7 +48,10 @@ int main()
 
     int fd2 = open(filename,O_CREAT|O_WRONLY,0766);
     if(fd2 < 0)
-        ERR_EXIT("open");
+    {
+        printf("创建目的文件名失败\n");
+        return -1;
+    }
     close(fd1);
     close(fd2);
     while(1)
