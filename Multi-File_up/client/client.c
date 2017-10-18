@@ -59,8 +59,10 @@ int main(int argc,char *argv[])
         printf("找不到你上传的文件，请重新上传\n");
         return -1;
     }
-    write(fd_sock,Filename,strlen(Filename));
+
+    write(fd_sock,Filename,strlen(Filename));//向服务器发送要发送的文件名
     close(fd_sock);
+
     total = lseek(fd_file,0,SEEK_END);//获取文件大小
     int count_per = (int)(total / 4);//发送块的平均大小
     for(int i = 0 ; i < 4; i++)

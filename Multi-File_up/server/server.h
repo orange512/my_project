@@ -21,6 +21,7 @@
             perror(m),exit(EXIT_FAILURE);\
         }while(0)
 pthread_t thread[4];//线程TID
+int fd_sock;
 int fd_data[4];//连接的描述符
 char filename[20];//文件名字
 struct sockaddr_in serveraddr,clientaddr;
@@ -44,6 +45,37 @@ int create_sock()//创建sock描述符
     if((ret = listen(sockfd,SOMAXCONN))< 0)
         ERR_EXIT("listen");
     return sockfd;
+}
+void create_Des_file()//创建目地文件
+{
+    char buf[1024];
+    clilen = sizeof(struct sockaddr);
+    int fd1 = accept(fd_sock,(struct sockaddr *)&clientaddr,&clilen);
+    memset(filename,0,sizeof(filename));
+
+    int count  = read(fd1,filename,sizeof(filename));//获取传输的文件名
+    buf[count] = '\0';
+
+    int fd2 = open(filename,O_CREAT|O_WRONLY,0766);
+    if(fd2 < 0)
+    {
+        printf("创建目的文件名失败\n");
+        return;
+    }
+    close(fd1);
+    close(fd2);
+}
+void rm_part()
+{
+    FILE *fp = NULL;
+    fp = popen("rm part*","r");
+    //fp = popen("~/my_project/Multi-File_up/server/rm.sh","r");//删除分块文件
+    if(fp == NULL)
+    {
+        printf("删除失败\n");
+        return;
+    }
+    pclose(fp);
 }
 void merge()//合并发送过来的文件
 {

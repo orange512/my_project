@@ -35,25 +35,9 @@ void *thread_recv_data(void *arg)//线程接受传输分块文件
 int main()
 {
     int i = 0 ;
-    int fd_sock = create_sock();
-    char buf[1024];
+    fd_sock = create_sock();
     int arg[4];
-
-    clilen = sizeof(struct sockaddr);
-    int fd1 = accept(fd_sock,(struct sockaddr *)&clientaddr,&clilen);
-    memset(filename,0,sizeof(filename));
-
-    int count  = read(fd1,filename,sizeof(filename));//获取传输的文件名
-    buf[count] = '\0';
-
-    int fd2 = open(filename,O_CREAT|O_WRONLY,0766);
-    if(fd2 < 0)
-    {
-        printf("创建目的文件名失败\n");
-        return -1;
-    }
-    close(fd1);
-    close(fd2);
+    create_Des_file();//接受客户端的文件名，并在服务器创建目标文件
     while(1)
     {
         clilen = sizeof(struct sockaddr);
@@ -71,7 +55,7 @@ int main()
 
     merge();//合并分块文件
     printf("接受到的文件%s成功\n",filename);
-    popen("~/my_project/Multi-File_up/server/rm.sh","r");//删除分块文件
+    rm_part();//删除分块文件
 
     return 0;
 
