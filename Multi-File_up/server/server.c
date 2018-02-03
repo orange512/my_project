@@ -14,7 +14,7 @@ void *thread_recv_data(void *arg)//线程接受传输分块文件
     char buf[1024];
     char file[20];
     read(fd_data[index],&temp,sizeof(temp));//获取文件编号
-    sprintf(file,"part%d",temp);
+    sprintf(file,"./%s/part%d",filename,temp);
     int fd_file = open(file,O_WRONLY|O_CREAT,0766);//创建分块文件
     if(fd_file < 0)
     {
@@ -53,9 +53,9 @@ int main()
         pthread_join(thread[i],NULL);
     }
 
-    merge();//合并分块文件
+    //merge();//合并分块文件
     printf("接受到的文件%s成功\n",filename);
-    rm_part();//删除分块文件
+    //rm_part();//删除分块文件
 
     return 0;
 

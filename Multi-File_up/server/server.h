@@ -10,6 +10,7 @@
 #include<stdlib.h>
 #include <sys/types.h>          /* See NOTES */
 #include <sys/socket.h>
+#include<sys/stat.h>
 #include<unistd.h>
 #include<arpa/inet.h>
 #include<netinet/in.h>
@@ -46,7 +47,7 @@ int create_sock()//创建sock描述符
         ERR_EXIT("listen");
     return sockfd;
 }
-void create_Des_file()//创建目地文件
+/*void create_Des_file()//创建目地文件
 {
     char buf[1024];
     clilen = sizeof(struct sockaddr);
@@ -64,6 +65,24 @@ void create_Des_file()//创建目地文件
     }
     close(fd1);
     close(fd2);
+}*/
+void create_Des_file()//创建目地文件
+{
+    char buf[1024];
+    clilen = sizeof(struct sockaddr);
+    int fd1 = accept(fd_sock,(struct sockaddr *)&clientaddr,&clilen);
+    memset(filename,0,sizeof(filename));
+
+    int count  = read(fd1,filename,sizeof(filename));//获取传输的文件名
+    //buf[count] = '\0';
+    printf("mude %s\n",filename);
+    int dir = mkdir(filename,0755);
+    if(dir < 0)
+    {
+        printf("创建目地文件失败\n");
+        return;
+    }
+    close(fd1);
 }
 void rm_part()
 {

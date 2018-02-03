@@ -1,16 +1,20 @@
-te database weChat;
+CREATE database weChat;
 use weChat;
 CREATE TABLE UserTable(
-    Uid nchar(16) primary key,
+    UID nchar(16) primary key,
     Uname nchar(16) not null,    
     Passwd nchar(16) not null,
     Logintime date,
     Birthday date,
     Usex enum('T','F'),/*T代表男，F代表女*/
-    Packet double DEFAULT 0,
     PhoneNumber char(11),
     remark nvarchar(300)
 
+);
+create table UserPacket(
+    UID nchar(16) primary key,
+    Packet double DEFAULT 0
+    foreign key(UID) references usertable(UID) on delete cascade on update cascade
 );
 
 create table SignIn(
