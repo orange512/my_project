@@ -30,7 +30,6 @@ typedef struct fds
 {
    int epollfd;
    int sockfd;
-   (struct cli_info*)cli_p; 
 }fds;
 
 int setnonblocking( int fd );

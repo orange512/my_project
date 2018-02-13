@@ -8,8 +8,10 @@
 #include"server.h"
 #define SERVERPORT 9000
 #define SERVERIP "127.0.0.1"
+#include"./include/cli_info.h"
 threadpool_t pool;
 SQL_CONN_POOL *sp ;  
+struct cli_info cli_info[MAX_CLI_SIZE] = { -1 };
 int create_sock()
 {
     //socket
@@ -50,18 +52,10 @@ int create_sock()
 
 int my_epoll(int listenfd)
 {
-    struct cli_info cli_info[MAX_CLI_SIZE];
-    for(int i = 0; i < MAX_CLI_SIZE;i++)
-    {
-        cli_info[i].cli_sockfd = -1;
-        memset(cli_info[i].cli_name,0,sizeof(cli_info[i].cli_name));
-    }
-    
     struct epoll_event events[ MAX_EVENT_NUMBER  ];
     int epollfd = epoll_create( 5  );
     assert( epollfd != -1  );
     addfd( epollfd, listenfd, 0 );//listenfd要连续触发要LT模式
-
     threadpool_init(&pool,10);
     while(1)
     {
@@ -74,13 +68,12 @@ int my_epoll(int listenfd)
         for ( int i = 0; i < ret; i++  )
         {
             int sockfd = events[i].data.fd;
-            if ( sockfd == listenfd  )
+            if ( sockfd == listenfd )
             {
                 struct sockaddr_in client_address;
                 socklen_t client_addrlength = sizeof( client_address  );
                 int connfd = accept( listenfd, ( struct sockaddr*  )&client_address, &client_addrlength  );
-                addfd( epollfd, connfd, 1  );
-
+                addfd( epollfd, connfd, 1);
             }
             else if ( events[i].events & EPOLLIN  )
             {
@@ -92,10 +85,10 @@ int my_epoll(int listenfd)
             else
             {
                 printf( "something else happened \n"  );
-
             }
 
         }
+        printf("一层循环完毕\n");
     }
     close(listenfd);
     return 0;
@@ -111,6 +104,11 @@ int server_start()
 }
 int main()
 {
+    for(int i = 0;i < MAX_CLI_SIZE;i++)
+    {
+        cli_info[i].cli_sockfd = -1;
+        memset(cli_info[i].cli_name,0,sizeof(cli_info[i].cli_name));
+    }
     sp =sql_pool_create(10, "localhost", 3306, "test", "root", "950512");
     server_start(); 
     sql_pool_destroy(sp);
